@@ -1,0 +1,2 @@
+errorMsg:
+  noLocation: "Error: The robot does not have a Location yet! Make sure you have run PLACE command!"
