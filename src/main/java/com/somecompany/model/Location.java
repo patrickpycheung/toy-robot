@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Location {
 
-	private String XCor;
-	private String YCor;
+	private int XCor;
+	private int YCor;
 	private Facing facing;
 }

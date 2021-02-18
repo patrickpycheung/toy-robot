@@ -38,8 +38,8 @@ public class ToyRobotReportTest {
 	@Test
 	public void shouldBeAbleToReportLocation() {
 		Location location = new Location();
-		location.setXCor("1");
-		location.setYCor("2");
+		location.setXCor(1);
+		location.setYCor(2);
 		location.setFacing(Facing.NORTH);
 
 		robot.setLocation(location);
