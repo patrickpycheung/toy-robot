@@ -122,4 +122,15 @@ public class ToyRobotPlaceTest {
 
 		assertEquals(ERROR_MSG_YCOR_OUT_OF_BOUNCE, exception.getMessage());
 	}
+
+	@Test
+	public void shouldBeAbleToThrowErrorIfFacingIsInvalid() {
+
+		// Assertion
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			toyRobotService.place("1", "2", "a");
+		});
+
+		assertEquals(ERROR_MSG_INVALID_FACING, exception.getMessage());
+	}
 }
