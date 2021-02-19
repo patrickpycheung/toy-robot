@@ -1,2 +1,7 @@
 errorMsg:
   noLocation: "Error: The robot does not have a Location yet! Make sure you have run PLACE command!"
+  xCorNotInteger: "Error: Invalid input! x-coordinate should be an integer!"
+  xCorOutOfBounce: "Error: Invalid input! x-coordinate should have a value between 0 and 5!"
+  yCorNotInteger: "Error: Invalid input! y-coordinate should be an integer!"
+  yCorOutOfBounce: "Error: Invalid input! y-coordinate should have a value between 0 and 5!"
+  invalidFacing: "Error: Invalid input! Facing is invalid"
