@@ -36,6 +36,9 @@ public class ValidationService {
 	@Value("${errorMsg.invalidFacing}")
 	private String ERROR_MSG_INVALID_FACING;
 
+	@Value("${errorMsg.robotFallOff}")
+	private String ERROR_MSG_ROBOT_FALL_OFF;
+
 	public void validateRobotLocation() throws IllegalArgumentException {
 		if (robot.getLocation() == null) {
 			// Robot has no location
@@ -96,6 +99,46 @@ public class ValidationService {
 
 			log.error(ERROR_MSG_INVALID_FACING);
 			throw new IllegalArgumentException(ERROR_MSG_INVALID_FACING);
+		}
+	}
+
+	public void validateMove() throws IllegalArgumentException {
+
+		// Validate robot location
+		validateRobotLocation();
+
+		int XCor = robot.getLocation().getXCor();
+		int YCor = robot.getLocation().getYCor();
+		Facing facing = robot.getLocation().getFacing();
+
+		if (facing.equals(Facing.EAST)) {
+			if (XCor + 1 > 5) {
+				// x-Coordinate distance out of bounce
+
+				log.error(ERROR_MSG_ROBOT_FALL_OFF);
+				throw new IllegalArgumentException(ERROR_MSG_ROBOT_FALL_OFF);
+			}
+		} else if (facing.equals(Facing.SOUTH)) {
+			if (YCor - 1 < 0) {
+				// y-Coordinate distance out of bounce
+
+				log.error(ERROR_MSG_ROBOT_FALL_OFF);
+				throw new IllegalArgumentException(ERROR_MSG_ROBOT_FALL_OFF);
+			}
+		} else if (facing.equals(Facing.WEST)) {
+			if (XCor - 1 < 0) {
+				// x-Coordinate distance out of bounce
+
+				log.error(ERROR_MSG_ROBOT_FALL_OFF);
+				throw new IllegalArgumentException(ERROR_MSG_ROBOT_FALL_OFF);
+			}
+		} else if (facing.equals(Facing.NORTH)) {
+			if (YCor + 1 > 5) {
+				// x-Coordinate distance out of bounce
+
+				log.error(ERROR_MSG_ROBOT_FALL_OFF);
+				throw new IllegalArgumentException(ERROR_MSG_ROBOT_FALL_OFF);
+			}
 		}
 	}
 }

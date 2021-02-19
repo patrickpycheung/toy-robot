@@ -5,3 +5,4 @@ errorMsg:
   yCorNotInteger: "Error: Invalid input! y-coordinate should be an integer!"
   yCorOutOfBounce: "Error: Invalid input! y-coordinate should have a value between 0 and 5!"
   invalidFacing: "Error: Invalid input! Facing is invalid"
+  robotFallOff: "Error: The robot will fall of the grid after this move!"
