@@ -27,13 +27,13 @@ public class ToyRobotReportTest {
 	@Autowired
 	private ToyRobotService toyRobotService;
 
+	@Value("${errorMsg.noLocation}")
+	private String ERROR_MSG_NO_LOCATION;
+
 	@BeforeEach
 	public void init() {
 		robot.setLocation(null);
 	}
-
-	@Value("${errorMsg.noLocation}")
-	private String ERROR_MSG_NO_LOCATION;
 
 	@Test
 	public void shouldBeAbleToReportLocation() {
