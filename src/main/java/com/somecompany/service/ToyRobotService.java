@@ -77,4 +77,22 @@ public class ToyRobotService {
 			robot.getLocation().setFacing(Facing.WEST);
 		}
 	}
+
+	public void right() throws IllegalArgumentException {
+
+		// Validate robot location
+		validationService.validateRobotLocation();
+
+		Facing facing = robot.getLocation().getFacing();
+
+		if (facing.equals(Facing.EAST)) {
+			robot.getLocation().setFacing(Facing.SOUTH);
+		} else if (facing.equals(Facing.SOUTH)) {
+			robot.getLocation().setFacing(Facing.WEST);
+		} else if (facing.equals(Facing.WEST)) {
+			robot.getLocation().setFacing(Facing.NORTH);
+		} else if (facing.equals(Facing.NORTH)) {
+			robot.getLocation().setFacing(Facing.EAST);
+		}
+	}
 }
