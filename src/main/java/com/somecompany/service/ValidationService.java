@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.somecompany.model.Command;
 import com.somecompany.model.Facing;
 import com.somecompany.model.Robot;
 
@@ -17,6 +18,18 @@ public class ValidationService {
 	@Autowired
 	@Qualifier("robot")
 	private Robot robot;
+
+	@Value("${errorMsg.nullOrEmptyUserInput}")
+	private String ERROR_MSG_NULL_OR_EMPTY_USER_INPUT;
+
+	@Value("${errorMsg.invalidCommand}")
+	private String ERROR_MSG_INVALID_COMMAND;
+
+	@Value("${errorMsg.invalidPlaceCommandFormat}")
+	private String ERROR_MSG_INVALID_PLACE_COMMAND_FORMAT;
+
+	@Value("${errorMsg.invalidNonPlaceCommandFormat}")
+	private String ERROR_MSG_INVALID_NON_PLACE_COMMAND_FORMAT;
 
 	@Value("${errorMsg.noLocation}")
 	private String ERROR_MSG_NO_LOCATION;
@@ -38,6 +51,68 @@ public class ValidationService {
 
 	@Value("${errorMsg.robotFallOff}")
 	private String ERROR_MSG_ROBOT_FALL_OFF;
+
+	public void validateUserInput(String usrInput) throws IllegalArgumentException {
+		if (usrInput == null || usrInput.equals("")) {
+			// Null or empty input
+
+			log.error(ERROR_MSG_NULL_OR_EMPTY_USER_INPUT);
+			throw new IllegalArgumentException(ERROR_MSG_NULL_OR_EMPTY_USER_INPUT);
+		}
+
+		String[] usrInputArr = usrInput.split(" ");
+
+		String command = usrInputArr[0].toUpperCase();
+
+		if (command.equals(Command.PLACE.name())) {
+			// PLACE command
+
+			validatePlaceUserInput(usrInputArr);
+		} else if (command.equals(Command.MOVE.name()) || command.equals(Command.LEFT.name())
+				|| command.equals(Command.RIGHT.name()) || command.equals(Command.REPORT.name())) {
+			// MOVE, LEFT, RIGHT and REPORT commands
+
+			validateNonPlaceUserInput(usrInputArr);
+		} else {
+			// Invalid command
+
+			log.error(ERROR_MSG_INVALID_COMMAND);
+			throw new IllegalArgumentException(ERROR_MSG_INVALID_COMMAND);
+		}
+	}
+
+	public void validatePlaceUserInput(String[] usrInputArr) throws IllegalArgumentException {
+
+		// PLACE command should have 1 part of params, e.g. "1,2,NORTH"
+		if (usrInputArr.length != 2) {
+			// Invalid PLACE command format
+
+			log.error(ERROR_MSG_INVALID_PLACE_COMMAND_FORMAT);
+			throw new IllegalArgumentException(ERROR_MSG_INVALID_PLACE_COMMAND_FORMAT);
+		}
+
+		String[] placeParamArr = usrInputArr[1].split(",");
+
+		// The param part should have 3 parts, e.g. "1","2" and "NORTH"
+		if (placeParamArr.length != 3) {
+			// Invalid PLACE command format
+
+			log.error(ERROR_MSG_INVALID_PLACE_COMMAND_FORMAT);
+			throw new IllegalArgumentException(ERROR_MSG_INVALID_PLACE_COMMAND_FORMAT);
+		}
+	}
+
+	public void validateNonPlaceUserInput(String[] usrInputArr) throws IllegalArgumentException {
+		// MOVE, LEFT, RIGHT and REPORT commands should have 1 part only
+		if (usrInputArr.length != 1) {
+			// Invalid MOVE/LEFT/RIGHT/REPORT command format
+
+			String errorMsg = String.format(ERROR_MSG_INVALID_NON_PLACE_COMMAND_FORMAT, usrInputArr[0].toUpperCase());
+
+			log.error(errorMsg);
+			throw new IllegalArgumentException(errorMsg);
+		}
+	}
 
 	public void validateRobotLocation() throws IllegalArgumentException {
 		if (robot.getLocation() == null) {
@@ -87,7 +162,7 @@ public class ValidationService {
 		// Validate facing
 		boolean isValidFacing = false;
 		for (Facing f : Facing.values()) {
-			if (f.name().equals(facing)) {
+			if (f.name().equals(facing.toUpperCase())) {
 				// Is a valid facing
 				isValidFacing = true;
 				break;

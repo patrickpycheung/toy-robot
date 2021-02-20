@@ -35,7 +35,7 @@ public class ToyRobotService {
 		Location location = new Location();
 		location.setXCor(Integer.valueOf(XCor));
 		location.setYCor(Integer.valueOf(YCor));
-		location.setFacing(Facing.valueOf(facing));
+		location.setFacing(Facing.valueOf(facing.toUpperCase()));
 
 		robot.setLocation(location);
 	}
