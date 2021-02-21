@@ -82,7 +82,7 @@ public class ToyRobotApplication implements CommandLineRunner {
 
 						toyRobotService.right();
 					} else if (command.equals(Command.REPORT.name())) {
-						// RIGHT command
+						// REPORT command
 
 						System.out.println(toyRobotService.report());
 					}

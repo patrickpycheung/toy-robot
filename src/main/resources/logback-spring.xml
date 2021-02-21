@@ -49,6 +49,7 @@
         </rollingPolicy>
     </appender>
 
+    <!-- For development -->
 	<springProfile name="dev">
     	<root level="INFO">
         	<appender-ref ref="STDOUT"/>
@@ -61,6 +62,7 @@
     	</logger>
 	</springProfile>
 	
+	<!-- For production -->
 	<springProfile name="!dev">
     	<root level="INFO">
         	<appender-ref ref="ROLLING_INFO_FILE"/>

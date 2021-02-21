@@ -11,6 +11,11 @@ import com.somecompany.model.Robot;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Backend services for validating the user input.
+ * 
+ * @author N/A
+ */
 @Service
 @Slf4j
 public class ValidationService {
@@ -52,6 +57,12 @@ public class ValidationService {
 	@Value("${errorMsg.robotFallOff}")
 	private String ERROR_MSG_ROBOT_FALL_OFF;
 
+	/**
+	 * Validate the user input from the console.
+	 * 
+	 * @param Raw user input from the console
+	 * @throws IllegalArgumentException
+	 */
 	public void validateUserInput(String usrInput) throws IllegalArgumentException {
 		if (usrInput == null || usrInput.equals("")) {
 			// Null or empty input
@@ -81,6 +92,12 @@ public class ValidationService {
 		}
 	}
 
+	/**
+	 * Validate the PLACE command.
+	 * 
+	 * @param Raw user input from the console
+	 * @throws IllegalArgumentException
+	 */
 	public void validatePlaceUserInput(String[] usrInputArr) throws IllegalArgumentException {
 
 		// PLACE command should have 1 part of params, e.g. "1,2,NORTH"
@@ -102,6 +119,12 @@ public class ValidationService {
 		}
 	}
 
+	/**
+	 * Validate commands other than PLACE, i.e. MOVE/LEFT/RIGHT/REPORT.
+	 * 
+	 * @param Raw user input from the console
+	 * @throws IllegalArgumentException
+	 */
 	public void validateNonPlaceUserInput(String[] usrInputArr) throws IllegalArgumentException {
 		// MOVE, LEFT, RIGHT and REPORT commands should have 1 part only
 		if (usrInputArr.length != 1) {
@@ -114,6 +137,11 @@ public class ValidationService {
 		}
 	}
 
+	/**
+	 * Validate the robot's location.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public void validateRobotLocation() throws IllegalArgumentException {
 		if (robot.getLocation() == null) {
 			// Robot has no location
@@ -123,6 +151,14 @@ public class ValidationService {
 		}
 	}
 
+	/**
+	 * Validate on whether the parameters of PLACE command will cause the robot to be placed in an invalid location.
+	 * 
+	 * @param x-coordinate
+	 * @param y-coordinate
+	 * @param facing
+	 * @throws IllegalArgumentException
+	 */
 	public void validatePlaceParams(String XCorStr, String YCorStr, String facing) throws IllegalArgumentException {
 
 		// Validate x-Coordinate
@@ -177,6 +213,11 @@ public class ValidationService {
 		}
 	}
 
+	/**
+	 * Validate on whether the MOVE command will cause the robot to fall off.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public void validateMove() throws IllegalArgumentException {
 
 		// Validate robot location

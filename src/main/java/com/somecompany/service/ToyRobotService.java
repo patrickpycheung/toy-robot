@@ -8,6 +8,11 @@ import com.somecompany.model.Facing;
 import com.somecompany.model.Location;
 import com.somecompany.model.Robot;
 
+/**
+ * Backend services for handling the commands.
+ * 
+ * @author N/A
+ */
 @Service
 public class ToyRobotService {
 
@@ -18,6 +23,12 @@ public class ToyRobotService {
 	@Autowired
 	private ValidationService validationService;
 
+	/**
+	 * Handle "REPORT" command.
+	 * 
+	 * @return The location of the robot
+	 * @throws IllegalArgumentException
+	 */
 	public String report() throws IllegalArgumentException {
 
 		// Validate robot location
@@ -27,6 +38,14 @@ public class ToyRobotService {
 				+ robot.getLocation().getFacing();
 	}
 
+	/**
+	 * Handle "PLACE" command.
+	 * 
+	 * @param x-coordinate
+	 * @param y-coordinate
+	 * @param facing
+	 * @throws IllegalArgumentException
+	 */
 	public void place(String XCor, String YCor, String facing) throws IllegalArgumentException {
 
 		// Validate the PLACE command params
@@ -40,6 +59,11 @@ public class ToyRobotService {
 		robot.setLocation(location);
 	}
 
+	/**
+	 * Handle "MOVE" command.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public void move() throws IllegalArgumentException {
 
 		// Validate the move command
@@ -60,6 +84,11 @@ public class ToyRobotService {
 		}
 	}
 
+	/**
+	 * Handle "LEFT" command.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public void left() throws IllegalArgumentException {
 
 		// Validate robot location
@@ -78,6 +107,11 @@ public class ToyRobotService {
 		}
 	}
 
+	/**
+	 * Handle "RIGHT" command.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public void right() throws IllegalArgumentException {
 
 		// Validate robot location
