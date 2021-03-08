@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.somecompany.model.Facing;
+import com.somecompany.model.Grid;
 import com.somecompany.model.Location;
 import com.somecompany.model.Robot;
 import com.somecompany.service.ToyRobotService;
@@ -27,6 +28,9 @@ public class ToyRobotRightTest {
 	private Robot robot;
 
 	@Autowired
+	private Grid grid;
+
+	@Autowired
 	private ToyRobotService toyRobotService;
 
 	@Value("${errorMsg.noLocation}")
@@ -34,6 +38,9 @@ public class ToyRobotRightTest {
 
 	@BeforeEach
 	public void init() {
+		grid.setWidth(5);
+		grid.setHeight(5);
+
 		robot.setLocation(null);
 	}
 

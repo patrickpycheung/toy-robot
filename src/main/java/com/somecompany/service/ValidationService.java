@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.somecompany.model.Command;
 import com.somecompany.model.Facing;
+import com.somecompany.model.Grid;
 import com.somecompany.model.Robot;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,31 @@ public class ValidationService {
 	@Autowired
 	@Qualifier("robot")
 	private Robot robot;
+
+	@Autowired
+	@Qualifier("grid")
+	private Grid grid;
+
+	@Value("${grid.width.minAllowedSize}")
+	private int gridWidthMinAllowedSize;
+
+	@Value("${grid.width.maxAllowedSize}")
+	private int gridWidthMaxAllowedSize;
+
+	@Value("${grid.height.minAllowedSize}")
+	private int gridHeightMinAllowedSize;
+
+	@Value("${grid.height.maxAllowedSize}")
+	private int gridHeightMaxAllowedSize;
+
+	@Value("${errorMsg.invalidGridSizeInput}")
+	private String ERROR_MSG_INVALID_GRID_SIZE_INPUT;
+
+	@Value("${errorMsg.widthOutOfBounce}")
+	private String ERROR_MSG_WIDTH_OUT_OF_BOUNCE;
+
+	@Value("${errorMsg.heightOutOfBounce}")
+	private String ERROR_MSG_HEIGHT_OUT_OF_BOUNCE;
 
 	@Value("${errorMsg.nullOrEmptyUserInput}")
 	private String ERROR_MSG_NULL_OR_EMPTY_USER_INPUT;
@@ -56,6 +82,58 @@ public class ValidationService {
 
 	@Value("${errorMsg.robotFallOff}")
 	private String ERROR_MSG_ROBOT_FALL_OFF;
+
+	/**
+	 * Validate the grid size input from the console.
+	 * 
+	 * @param Raw grid size input from the console
+	 * @throws IllegalArgumentException
+	 */
+	public void validateGridSizeInput(String gridSizeInput) throws IllegalArgumentException {
+		String[] gridSizeInputArr = gridSizeInput.split("x");
+
+		// The params should be 2 integers
+		if (gridSizeInputArr.length != 2) {
+			log.error(ERROR_MSG_INVALID_GRID_SIZE_INPUT);
+			throw new IllegalArgumentException(ERROR_MSG_INVALID_GRID_SIZE_INPUT);
+		}
+
+		try {
+
+			// Validate width
+
+			Integer width = Integer.parseInt(gridSizeInputArr[0]);
+
+			if (width < gridWidthMinAllowedSize || width > gridWidthMaxAllowedSize) {
+				// Width out of bounce
+
+				String errorMsg = String.format(ERROR_MSG_WIDTH_OUT_OF_BOUNCE, gridWidthMinAllowedSize,
+						gridWidthMaxAllowedSize);
+
+				log.error(errorMsg);
+				throw new IllegalArgumentException(errorMsg);
+			}
+
+			// Validate height
+
+			Integer height = Integer.parseInt(gridSizeInputArr[1]);
+
+			if (height < gridHeightMinAllowedSize || height > gridHeightMaxAllowedSize) {
+				// Height out of bounce
+
+				String errorMsg = String.format(ERROR_MSG_HEIGHT_OUT_OF_BOUNCE, gridHeightMinAllowedSize,
+						gridHeightMaxAllowedSize);
+
+				log.error(errorMsg);
+				throw new IllegalArgumentException(errorMsg);
+			}
+		} catch (NumberFormatException exception) {
+			// Cannot parse width and/or height to integer
+
+			log.error(ERROR_MSG_INVALID_GRID_SIZE_INPUT);
+			throw new IllegalArgumentException(ERROR_MSG_INVALID_GRID_SIZE_INPUT);
+		}
+	}
 
 	/**
 	 * Validate the user input from the console.
@@ -161,15 +239,20 @@ public class ValidationService {
 	 */
 	public void validatePlaceParams(String XCorStr, String YCorStr, String facing) throws IllegalArgumentException {
 
+		int xCorLimit = grid.getWidth();
+		int yCorLimit = grid.getHeight();
+
 		// Validate x-Coordinate
 		try {
 			int XCor = Integer.valueOf(XCorStr);
 
-			if (XCor < 0 || XCor > 5) {
+			if (XCor < 0 || XCor > xCorLimit) {
 				// x-Coordinate Distance out of bounce
 
-				log.error(ERROR_MSG_XCOR_OUT_OF_BOUNCE);
-				throw new IllegalArgumentException(ERROR_MSG_XCOR_OUT_OF_BOUNCE);
+				String errorMsg = String.format(ERROR_MSG_XCOR_OUT_OF_BOUNCE, xCorLimit);
+
+				log.error(errorMsg);
+				throw new IllegalArgumentException(errorMsg);
 			}
 		} catch (NumberFormatException exception) {
 			// Cannot parse x-Coordinate to integer
@@ -182,11 +265,13 @@ public class ValidationService {
 		try {
 			int YCor = Integer.valueOf(YCorStr);
 
-			if (YCor < 0 || YCor > 5) {
+			if (YCor < 0 || YCor > yCorLimit) {
 				// y-Coordinate Distance out of bounce
 
-				log.error(ERROR_MSG_YCOR_OUT_OF_BOUNCE);
-				throw new IllegalArgumentException(ERROR_MSG_YCOR_OUT_OF_BOUNCE);
+				String errorMsg = String.format(ERROR_MSG_YCOR_OUT_OF_BOUNCE, yCorLimit);
+
+				log.error(errorMsg);
+				throw new IllegalArgumentException(errorMsg);
 			}
 		} catch (NumberFormatException exception) {
 			// Cannot parse y-Coordinate to integer
@@ -220,6 +305,9 @@ public class ValidationService {
 	 */
 	public void validateMove() throws IllegalArgumentException {
 
+		int xCorLimit = grid.getWidth();
+		int yCorLimit = grid.getHeight();
+
 		// Validate robot location
 		validateRobotLocation();
 
@@ -228,7 +316,7 @@ public class ValidationService {
 		Facing facing = robot.getLocation().getFacing();
 
 		if (facing.equals(Facing.EAST)) {
-			if (XCor + 1 > 5) {
+			if (XCor + 1 > xCorLimit) {
 				// x-Coordinate distance out of bounce
 
 				log.error(ERROR_MSG_ROBOT_FALL_OFF);
@@ -249,7 +337,7 @@ public class ValidationService {
 				throw new IllegalArgumentException(ERROR_MSG_ROBOT_FALL_OFF);
 			}
 		} else if (facing.equals(Facing.NORTH)) {
-			if (YCor + 1 > 5) {
+			if (YCor + 1 > yCorLimit) {
 				// x-Coordinate distance out of bounce
 
 				log.error(ERROR_MSG_ROBOT_FALL_OFF);

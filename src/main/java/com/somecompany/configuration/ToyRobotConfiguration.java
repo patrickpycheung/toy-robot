@@ -3,6 +3,7 @@ package com.somecompany.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.somecompany.model.Grid;
 import com.somecompany.model.Robot;
 
 /**
@@ -22,5 +23,16 @@ public class ToyRobotConfiguration {
 	public Robot getRobot() {
 		Robot robot = new Robot();
 		return robot;
+	}
+
+	/**
+	 * Grid bean.
+	 * 
+	 * @return Grid bean
+	 */
+	@Bean("grid")
+	public Grid getGrid() {
+		Grid grid = new Grid();
+		return grid;
 	}
 }

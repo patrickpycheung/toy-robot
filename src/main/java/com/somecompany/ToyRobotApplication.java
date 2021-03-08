@@ -9,12 +9,14 @@ import java.io.InputStreamReader;
 import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.somecompany.model.Command;
+import com.somecompany.model.Grid;
 import com.somecompany.service.ToyRobotService;
 import com.somecompany.service.ValidationService;
 
@@ -29,6 +31,10 @@ public class ToyRobotApplication implements CommandLineRunner {
 
 	@Autowired
 	private ToyRobotService toyRobotService;
+
+	@Autowired
+	@Qualifier("grid")
+	private Grid grid;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ToyRobotApplication.class, args);
@@ -48,6 +54,46 @@ public class ToyRobotApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
+
+		/* Set grid size */
+
+		while (true) {
+			System.out.println("Please enter the grid size (widthxheight, e.g. 5x5):");
+			System.out.println("Leave this field empty to set grid size as default value (i.e. 5x5)");
+
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				String gridSizeInput = br.readLine();
+
+				try {
+					// Set default if there is no input specified
+					if (gridSizeInput.equals("")) {
+						grid.setWidth(5);
+						grid.setHeight(5);
+						break;
+					}
+
+					// Validate the grid size input
+					validationService.validateGridSizeInput(gridSizeInput);
+
+					// Set the grid size
+
+					String[] gridSizeInputArr = gridSizeInput.split("x");
+
+					grid.setWidth(Integer.parseInt(gridSizeInputArr[0]));
+					grid.setHeight(Integer.parseInt(gridSizeInputArr[1]));
+
+					break;
+				} catch (IllegalArgumentException exception) {
+					System.out.println(exception.getMessage());
+				}
+
+			} catch (IOException exception) {
+
+				System.out.println(ERROR_MSG_IO_EXCEPTION);
+				log.error(ERROR_MSG_IO_EXCEPTION);
+			}
+		}
 
 		/* Handle file input */
 
