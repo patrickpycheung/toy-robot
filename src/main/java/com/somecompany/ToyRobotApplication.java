@@ -112,6 +112,11 @@ public class ToyRobotApplication implements CommandLineRunner {
 		}
 	}
 
+	/**
+	 * Handle the user input. This may be a command from file or by manual input at command line.
+	 * 
+	 * @param usrInput
+	 */
 	private void handleUserInput(String usrInput) {
 		try {
 			// Validate user input
