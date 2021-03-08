@@ -1,3 +1,9 @@
+inputFile:
+  Path: "data/TestData.txt"
+  Renamed:
+    folder: "data/processed/"
+    suffix: "_Processed_"
+
 errorMsg:
   ioException: "Error: I/O excpetion has occurred!"
   nullOrEmptyUserInput: "Error: Invalid input! Null or empty input not allowed!"
