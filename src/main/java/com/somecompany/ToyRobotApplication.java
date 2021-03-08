@@ -103,44 +103,7 @@ public class ToyRobotApplication implements CommandLineRunner {
 				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 				String usrInput = br.readLine();
 
-				try {
-					// Validate user input
-					validationService.validateUserInput(usrInput);
-
-					String[] usrInputArr = usrInput.split(" ");
-
-					String command = usrInputArr[0].toUpperCase();
-
-					if (command.equals(Command.PLACE.name())) {
-						// PLACE command
-
-						String[] placeParamArr = usrInputArr[1].split(",");
-
-						String XCor = placeParamArr[0];
-						String YCor = placeParamArr[1];
-						String facing = placeParamArr[2];
-
-						toyRobotService.place(XCor, YCor, facing);
-					} else if (command.equals(Command.MOVE.name())) {
-						// MOVE command
-
-						toyRobotService.move();
-					} else if (command.equals(Command.LEFT.name())) {
-						// LEFT command
-
-						toyRobotService.left();
-					} else if (command.equals(Command.RIGHT.name())) {
-						// RIGHT command
-
-						toyRobotService.right();
-					} else if (command.equals(Command.REPORT.name())) {
-						// REPORT command
-
-						System.out.println(toyRobotService.report());
-					}
-				} catch (IllegalArgumentException exception) {
-					System.out.println(exception.getMessage());
-				}
+				handleUserInput(usrInput);
 			} catch (IOException exception) {
 
 				System.out.println(ERROR_MSG_IO_EXCEPTION);
