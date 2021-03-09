@@ -13,6 +13,7 @@ grid:
     maxAllowedSize: 100
 
 errorMsg:
+  invalidApiParams: "Error: Invalid parameters!"
   ioException: "Error: I/O excpetion has occurred!"
   invalidGridSizeInput: "Error: Invalid grid size input! Grid size input should have the format 'widthxheight', e.g. '5x5'!"
   widthOutOfBounce: "Width should have a value between %1$s and %2$s!"

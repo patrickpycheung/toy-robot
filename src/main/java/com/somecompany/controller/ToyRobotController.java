@@ -1,12 +1,18 @@
 package com.somecompany.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.somecompany.model.Location;
 import com.somecompany.service.ToyRobotService;
 
 import reactor.core.publisher.Mono;
@@ -18,6 +24,9 @@ public class ToyRobotController {
 	@Autowired
 	private ToyRobotService toyRobotService;
 
+	@Value("${errorMsg.invalidApiParams}")
+	private String ERROR_INVALID_API_PARAMS;
+
 	@GetMapping("/report")
 	public ResponseEntity<Mono<String>> report() {
 
@@ -26,5 +35,35 @@ public class ToyRobotController {
 		} catch (IllegalArgumentException exception) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
 		}
+	}
+
+	/**
+	 * API endpoint for "PLACE" function.
+	 * 
+	 * @param location
+	 * @return ResponseEntity<String>
+	 */
+	@PutMapping("/place")
+	public ResponseEntity<Mono<String>> place(@RequestBody Location location) {
+
+		try {
+			toyRobotService.place(String.valueOf(location.getXCor()), String.valueOf(location.getYCor()),
+					location.getFacing().name());
+			return ResponseEntity.status(HttpStatus.OK).body(Mono.just("Successfully placed robot on grid."));
+		} catch (IllegalArgumentException exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
+		}
+
+	}
+
+	/**
+	 * Handle handleHttpMessageNotReadableException, e.g. cannot parse the parameters.
+	 * 
+	 * @return ResponseEntity<String>
+	 */
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<String> handleHttpMessageNotReadableException() {
+
+		return ResponseEntity.badRequest().body(ERROR_INVALID_API_PARAMS);
 	}
 }
