@@ -27,6 +27,11 @@ public class ToyRobotController {
 	@Value("${errorMsg.invalidApiParams}")
 	private String ERROR_INVALID_API_PARAMS;
 
+	/**
+	 * API endpoint for "REPORT" function.
+	 * 
+	 * @return ResponseEntity<String>
+	 */
 	@GetMapping("/report")
 	public ResponseEntity<Mono<String>> report() {
 
