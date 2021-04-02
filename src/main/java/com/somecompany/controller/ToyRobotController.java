@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,23 @@ public class ToyRobotController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
 		}
 
+	}
+
+	/**
+	 * API endpoint for "MOVE" function.
+	 * 
+	 * @return ResponseEntity<Mono<String>>
+	 */
+	@PostMapping("/move")
+	public ResponseEntity<Mono<String>> move() {
+
+		try {
+			toyRobotService.move();
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(Mono.just("Successfully moved robot, new location is " + toyRobotService.report()));
+		} catch (IllegalArgumentException exception) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
+		}
 	}
 
 	/**
