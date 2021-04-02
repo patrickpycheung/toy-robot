@@ -1,13 +1,10 @@
 package com.somecompany;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.time.Instant;
-
+import com.somecompany.model.Command;
+import com.somecompany.model.Grid;
+import com.somecompany.service.ToyRobotService;
+import com.somecompany.service.ValidationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,200 +13,196 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
 
-import com.somecompany.model.Command;
-import com.somecompany.model.Grid;
-import com.somecompany.service.ToyRobotService;
-import com.somecompany.service.ValidationService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.io.*;
+import java.time.Instant;
 
 @SpringBootApplication
 @Slf4j
 public class ToyRobotApplication implements CommandLineRunner {
 
-	@Autowired
-	private ValidationService validationService;
+    @Autowired
+    private ValidationService validationService;
 
-	@Autowired
-	private ToyRobotService toyRobotService;
+    @Autowired
+    private ToyRobotService toyRobotService;
 
-	@Autowired
-	@Qualifier("grid")
-	private Grid grid;
+    @Autowired
+    @Qualifier("grid")
+    private Grid grid;
+    @Autowired
+    private Environment env;
+    @Value("${inputFile.Path}")
+    private String inputFilePath;
+    @Value("${inputFile.Renamed.folder}")
+    private String inputFileRenamedFolder;
+    @Value("${inputFile.Renamed.suffix}")
+    private String inputFileRenamedSuffix;
+    @Value("${errorMsg.ioException}")
+    private String ERROR_MSG_IO_EXCEPTION;
 
-	public static void main(String[] args) {
-		SpringApplication.run(ToyRobotApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ToyRobotApplication.class, args);
+    }
 
-	@Autowired
-	private Environment env;
+    @Override
+    public void run(String... args) {
 
-	@Value("${inputFile.Path}")
-	private String inputFilePath;
+        if (env.getActiveProfiles().length == 0 || !env.getActiveProfiles()[0].equals("test")) {
+            // Using non-test Spring profile
 
-	@Value("${inputFile.Renamed.folder}")
-	private String inputFileRenamedFolder;
+            /* Set grid size */
 
-	@Value("${inputFile.Renamed.suffix}")
-	private String inputFileRenamedSuffix;
+            while (true) {
+                System.out.println("Please enter the grid size (widthxheight, e.g. 5x5):");
+                System.out.println("Leave this field empty to set grid size as default value (i.e. 5x5)");
 
-	@Value("${errorMsg.ioException}")
-	private String ERROR_MSG_IO_EXCEPTION;
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                    String gridSizeInput = br.readLine();
 
-	@Override
-	public void run(String... args) {
+                    try {
+                        // Set default if there is no input specified
+                        if (gridSizeInput.equals("")) {
+                            grid.setWidth(5);
+                            grid.setHeight(5);
+                            break;
+                        }
 
-		if (env.getActiveProfiles().length == 0 || !env.getActiveProfiles()[0].equals("test")) {
-			// Using non-test Spring profile
+                        // Validate the grid size input
+                        validationService.validateGridSizeInput(gridSizeInput);
 
-			/* Set grid size */
+                        // Set the grid size
 
-			while (true) {
-				System.out.println("Please enter the grid size (widthxheight, e.g. 5x5):");
-				System.out.println("Leave this field empty to set grid size as default value (i.e. 5x5)");
+                        String[] gridSizeInputArr = gridSizeInput.split("x");
 
-				try {
-					BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-					String gridSizeInput = br.readLine();
+                        grid.setWidth(Integer.parseInt(gridSizeInputArr[0]));
+                        grid.setHeight(Integer.parseInt(gridSizeInputArr[1]));
 
-					try {
-						// Set default if there is no input specified
-						if (gridSizeInput.equals("")) {
-							grid.setWidth(5);
-							grid.setHeight(5);
-							break;
-						}
+                        break;
+                    } catch (IllegalArgumentException exception) {
+                        System.out.println(exception.getMessage());
+                    }
 
-						// Validate the grid size input
-						validationService.validateGridSizeInput(gridSizeInput);
+                } catch (IOException exception) {
 
-						// Set the grid size
+                    System.out.println(ERROR_MSG_IO_EXCEPTION);
+                    log.error(ERROR_MSG_IO_EXCEPTION);
+                }
+            }
 
-						String[] gridSizeInputArr = gridSizeInput.split("x");
+            /* Handle file input */
 
-						grid.setWidth(Integer.parseInt(gridSizeInputArr[0]));
-						grid.setHeight(Integer.parseInt(gridSizeInputArr[1]));
+            System.out.println("Begin handling file input...");
 
-						break;
-					} catch (IllegalArgumentException exception) {
-						System.out.println(exception.getMessage());
-					}
+            try {
+                File inputFile = new File(inputFilePath);
 
-				} catch (IOException exception) {
+                BufferedReader fileBR = new BufferedReader(new FileReader(inputFile));
 
-					System.out.println(ERROR_MSG_IO_EXCEPTION);
-					log.error(ERROR_MSG_IO_EXCEPTION);
-				}
-			}
+                try {
+                    String usrInput;
+                    while ((usrInput = fileBR.readLine()) != null) {
+                        // Handle one line of command
+                        handleUserInput(usrInput);
+                    }
 
-			/* Handle file input */
+                    // Rename file after processing
 
-			System.out.println("Begin handling file input...");
+                    String inputFileName = inputFile.getName();
+                    Instant instant = Instant.now();
 
-			try {
-				File inputFile = new File(inputFilePath);
+                    // Append current timestamp to file, and move to processed folder
+                    File renamedFile = new File(
+                            inputFileRenamedFolder + inputFileName + inputFileRenamedSuffix + instant);
 
-				BufferedReader fileBR = new BufferedReader(new FileReader(inputFile));
+                    inputFile.renameTo(renamedFile);
+                } catch (IOException e) {
 
-				try {
-					String usrInput;
-					while ((usrInput = fileBR.readLine()) != null) {
-						// Handle one line of command
-						handleUserInput(usrInput);
-					}
+                    System.out.println(ERROR_MSG_IO_EXCEPTION);
+                    log.error(ERROR_MSG_IO_EXCEPTION);
+                }
+            } catch (FileNotFoundException e) {
+                // No file input, just proceed
+            }
 
-					// Rename file after processing
+            System.out.println("Finished handling file input.");
 
-					String inputFileName = inputFile.getName();
-					Instant instant = Instant.now();
+            /* Handle manual input on console */
 
-					// Append current timestamp to file, and move to processed folder
-					File renamedFile = new File(
-							inputFileRenamedFolder + inputFileName + inputFileRenamedSuffix + instant);
+            // Instruct user to perform input
+            System.out.println("Welcome to toy robot application!");
+            System.out.println("Below are the possible operations:");
+            System.out.println("PLACE <x-coordinate> <y-coordinate> <facing>");
+            System.out.println("PLACE_OBSTACLE");
+            System.out.println("MOVE");
+            System.out.println("LEFT");
+            System.out.println("RIGHT");
+            System.out.println("REPORT");
 
-					inputFile.renameTo(renamedFile);
-				} catch (IOException e) {
+            while (true) {
+                System.out.println("Please enter your command:");
 
-					System.out.println(ERROR_MSG_IO_EXCEPTION);
-					log.error(ERROR_MSG_IO_EXCEPTION);
-				}
-			} catch (FileNotFoundException e) {
-				// No file input, just proceed
-			}
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                    String usrInput = br.readLine();
 
-			System.out.println("Finished handling file input.");
+                    handleUserInput(usrInput);
+                } catch (IOException exception) {
 
-			/* Handle manual input on console */
+                    System.out.println(ERROR_MSG_IO_EXCEPTION);
+                    log.error(ERROR_MSG_IO_EXCEPTION);
+                }
+            }
+        }
+    }
 
-			// Instruct user to perform input
-			System.out.println("Welcome to toy robot application!");
-			System.out.println("Below are the possible operations:");
-			System.out.println("PLACE <x-coordinate> <y-coordinate> <facing>");
-			System.out.println("MOVE");
-			System.out.println("LEFT");
-			System.out.println("RIGHT");
-			System.out.println("REPORT");
+    /**
+     * Handle the user input. This may be a command from file or by manual input at command line.
+     *
+     * @param usrInput
+     */
+    private void handleUserInput(String usrInput) {
+        try {
+            // Validate user input
+            validationService.validateUserInput(usrInput);
 
-			while (true) {
-				System.out.println("Please enter your command:");
+            String[] usrInputArr = usrInput.split(" ");
 
-				try {
-					BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-					String usrInput = br.readLine();
+            String command = usrInputArr[0].toUpperCase();
 
-					handleUserInput(usrInput);
-				} catch (IOException exception) {
+            if (command.equals(Command.PLACE.name())) {
+                // PLACE command
 
-					System.out.println(ERROR_MSG_IO_EXCEPTION);
-					log.error(ERROR_MSG_IO_EXCEPTION);
-				}
-			}
-		}
-	}
+                String[] placeParamArr = usrInputArr[1].split(",");
 
-	/**
-	 * Handle the user input. This may be a command from file or by manual input at command line.
-	 * 
-	 * @param usrInput
-	 */
-	private void handleUserInput(String usrInput) {
-		try {
-			// Validate user input
-			validationService.validateUserInput(usrInput);
+                String XCor = placeParamArr[0];
+                String YCor = placeParamArr[1];
+                String facing = placeParamArr[2];
 
-			String[] usrInputArr = usrInput.split(" ");
+                toyRobotService.place(XCor, YCor, facing);
+            } else if (command.equals(Command.MOVE.name())) {
+                // MOVE command
 
-			String command = usrInputArr[0].toUpperCase();
+                toyRobotService.move();
+            } else if (command.equals(Command.LEFT.name())) {
+                // LEFT command
 
-			if (command.equals(Command.PLACE.name())) {
-				// PLACE command
+                toyRobotService.left();
+            } else if (command.equals(Command.RIGHT.name())) {
+                // RIGHT command
 
-				String[] placeParamArr = usrInputArr[1].split(",");
+                toyRobotService.right();
+            } else if (command.equals(Command.REPORT.name())) {
+                // REPORT command
 
-				String XCor = placeParamArr[0];
-				String YCor = placeParamArr[1];
-				String facing = placeParamArr[2];
+                System.out.println(toyRobotService.report());
+            } else if (command.equals(Command.PLACE_OBSTACLE.name())) {
+                // PLACE_OBSTACLE command
 
-				toyRobotService.place(XCor, YCor, facing);
-			} else if (command.equals(Command.MOVE.name())) {
-				// MOVE command
-
-				toyRobotService.move();
-			} else if (command.equals(Command.LEFT.name())) {
-				// LEFT command
-
-				toyRobotService.left();
-			} else if (command.equals(Command.RIGHT.name())) {
-				// RIGHT command
-
-				toyRobotService.right();
-			} else if (command.equals(Command.REPORT.name())) {
-				// REPORT command
-
-				System.out.println(toyRobotService.report());
-			}
-		} catch (IllegalArgumentException exception) {
-			System.out.println(exception.getMessage());
-		}
-	}
+                toyRobotService.placeObstacle();
+            }
+        } catch (IllegalArgumentException exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
 }

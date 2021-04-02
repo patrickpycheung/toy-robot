@@ -1,9 +1,6 @@
 package com.somecompany;
 
-import com.somecompany.model.Facing;
-import com.somecompany.model.Grid;
-import com.somecompany.model.Location;
-import com.somecompany.model.Robot;
+import com.somecompany.model.*;
 import com.somecompany.service.ToyRobotService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +22,9 @@ public class ToyRobotMoveTest {
     private Robot robot;
 
     @Autowired
+    private Obstacle obstacle;
+
+    @Autowired
     private Grid grid;
 
     @Autowired
@@ -39,12 +39,17 @@ public class ToyRobotMoveTest {
     @Value("${errorMsg.robotFallOff}")
     private String ERROR_MSG_ROBOT_FALL_OFF;
 
+    @Value("${errorMsg.robotHitObstacle}")
+    private String ERROR_MSG_ROBOT_HIT_OBSTACLE;
+
     @BeforeEach
     public void init() {
         grid.setWidth(5);
         grid.setHeight(5);
 
         robot.setLocation(null);
+
+        obstacle.setLocation(null);
     }
 
     @Test
@@ -226,6 +231,78 @@ public class ToyRobotMoveTest {
     }
 
     @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveEast() {
+        toyRobotService.place("1", "2", "EAST");
+        toyRobotService.placeObstacle();
+
+        // Assertion
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            toyRobotService.move();
+        });
+
+        assertEquals(ERROR_MSG_ROBOT_HIT_OBSTACLE, exception.getMessage());
+
+        // Location should not have changed
+        assertEquals(1, robot.getLocation().getXCor());
+        assertEquals(2, robot.getLocation().getYCor());
+        assertEquals(Facing.EAST, robot.getLocation().getFacing());
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveSouth() {
+        toyRobotService.place("1", "2", "SOUTH");
+        toyRobotService.placeObstacle();
+
+        // Assertion
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            toyRobotService.move();
+        });
+
+        assertEquals(ERROR_MSG_ROBOT_HIT_OBSTACLE, exception.getMessage());
+
+        // Location should not have changed
+        assertEquals(1, robot.getLocation().getXCor());
+        assertEquals(2, robot.getLocation().getYCor());
+        assertEquals(Facing.SOUTH, robot.getLocation().getFacing());
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveWest() {
+        toyRobotService.place("1", "2", "WEST");
+        toyRobotService.placeObstacle();
+
+        // Assertion
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            toyRobotService.move();
+        });
+
+        assertEquals(ERROR_MSG_ROBOT_HIT_OBSTACLE, exception.getMessage());
+
+        // Location should not have changed
+        assertEquals(1, robot.getLocation().getXCor());
+        assertEquals(2, robot.getLocation().getYCor());
+        assertEquals(Facing.WEST, robot.getLocation().getFacing());
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveNorth() {
+        toyRobotService.place("1", "2", "NORTH");
+        toyRobotService.placeObstacle();
+
+        // Assertion
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            toyRobotService.move();
+        });
+
+        assertEquals(ERROR_MSG_ROBOT_HIT_OBSTACLE, exception.getMessage());
+
+        // Location should not have changed
+        assertEquals(1, robot.getLocation().getXCor());
+        assertEquals(2, robot.getLocation().getYCor());
+        assertEquals(Facing.NORTH, robot.getLocation().getFacing());
+    }
+
+    @Test
     public void shouldBeAbleToMoveRobotEastOnAPICall() {
         toyRobotService.place("1", "2", "NORTH");
 
@@ -338,6 +415,66 @@ public class ToyRobotMoveTest {
                     // Location should not have changed
                     assertEquals(1, robot.getLocation().getXCor());
                     assertEquals(5, robot.getLocation().getYCor());
+                    assertEquals(Facing.NORTH, robot.getLocation().getFacing());
+                });
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveEastOnAPICall() {
+        toyRobotService.place("1", "2", "EAST");
+        toyRobotService.placeObstacle();
+
+        webTestClient.post().uri("/api/toyrobot/move").exchange().expectStatus().isBadRequest().expectBody(String.class)
+                .value(result -> {
+                    // Assertion
+                    // Location should not have changed
+                    assertEquals(1, robot.getLocation().getXCor());
+                    assertEquals(2, robot.getLocation().getYCor());
+                    assertEquals(Facing.EAST, robot.getLocation().getFacing());
+                });
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveSouthOnAPICall() {
+        toyRobotService.place("1", "2", "SOUTH");
+        toyRobotService.placeObstacle();
+
+        webTestClient.post().uri("/api/toyrobot/move").exchange().expectStatus().isBadRequest().expectBody(String.class)
+                .value(result -> {
+                    // Assertion
+                    // Location should not have changed
+                    assertEquals(1, robot.getLocation().getXCor());
+                    assertEquals(2, robot.getLocation().getYCor());
+                    assertEquals(Facing.SOUTH, robot.getLocation().getFacing());
+                });
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveWestOnAPICall() {
+        toyRobotService.place("1", "2", "WEST");
+        toyRobotService.placeObstacle();
+
+        webTestClient.post().uri("/api/toyrobot/move").exchange().expectStatus().isBadRequest().expectBody(String.class)
+                .value(result -> {
+                    // Assertion
+                    // Location should not have changed
+                    assertEquals(1, robot.getLocation().getXCor());
+                    assertEquals(2, robot.getLocation().getYCor());
+                    assertEquals(Facing.WEST, robot.getLocation().getFacing());
+                });
+    }
+
+    @Test
+    public void shouldBeAbleToThrowErrorIfRobotWillHitAnObstacleAfterMoveNorthOnAPICall() {
+        toyRobotService.place("1", "2", "NORTH");
+        toyRobotService.placeObstacle();
+
+        webTestClient.post().uri("/api/toyrobot/move").exchange().expectStatus().isBadRequest().expectBody(String.class)
+                .value(result -> {
+                    // Assertion
+                    // Location should not have changed
+                    assertEquals(1, robot.getLocation().getXCor());
+                    assertEquals(2, robot.getLocation().getYCor());
                     assertEquals(Facing.NORTH, robot.getLocation().getFacing());
                 });
     }

@@ -26,7 +26,8 @@ The Toy Robot application is a simulation of a toy robot moving on a square tabl
 
   | Editor | Version | Date |Description|
   | --- | --- | --- | --- |
-  | N/A | 1.0.0| 21 Feb 2021 |Initial release|
+  | Patrick | 1.0.0| 21 Feb 2021 |Initial release|
+  | Patrick | 2.0.0| 2 Apr 2021 |Add:<br/>(1) Ability to specify grid size<br/>(2) Read commands from file before manual console input<br/>(3) "PLACE_OBSTACLE" command to place an obstacle in front of the robot|
 
 ## **Assumptions**
 
@@ -75,7 +76,7 @@ There are 2 main parts that constitutes the application, the frontend console an
 
 The frontend console receives input from the user, delegates the actual handling to the services, and displays messages to the user.
 
-The backend services provide functions that corresponds to the commands ("PLACE/MOVE/LEFT/RIGHT/REPORT"). Any display (e.g. from the "REPORT" command) in the process will be provided back to the console and shown to the user.
+The backend services provide functions that corresponds to the commands ("PLACE/PLACE_OBSTACLE/MOVE/LEFT/RIGHT/REPORT"). Any display (e.g. from the "REPORT" command) in the process will be provided back to the console and shown to the user.
 
 ### Data storage
 
@@ -101,7 +102,7 @@ Log settings can be configured by editing logback-spring.xml.
 
 The development phase had been progressed with Test Driven Developement (TDD)-like style.
 
-Each of the backend services correspoinding to the commands ("PLACE/MOVE/LEFT/RIGHT/REPORT") had been implemented one by one. The desired outcomes (e.g. "MOVE" will advance 1 unit in the direction facing) were thought of before carrying out the implementation. After unit testing and confirming the functionablity of one service, another service would then be developed.
+Each of the backend services correspoinding to the commands ("PLACE/PLACE_OBSTACLE/MOVE/LEFT/RIGHT/REPORT") had been implemented one by one. The desired outcomes (e.g. "MOVE" will advance 1 unit in the direction facing) were thought of before carrying out the implementation. After unit testing and confirming the functionablity of one service, another service would then be developed.
 
 After the backend services were created, the frontend console application was connected to the backend services, and integration test was performed to verify the end-to-end functionability.
 

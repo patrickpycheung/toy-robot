@@ -29,3 +29,5 @@ errorMsg:
   yCorOutOfBounce: "Error: Invalid input! y-coordinate should have a value between 0 and %s!"
   invalidFacing: "Error: Invalid input! Facing is invalid"
   robotFallOff: "Error: The robot will fall of the grid after this move!"
+  placeObstacleAtNonExistentLocation: "Attempting to place obstacle at non-existent location!"
+  robotHitObstacle: "Error: Robot will hit an obstacle after this move!"

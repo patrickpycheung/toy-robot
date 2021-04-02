@@ -1,9 +1,6 @@
 package com.somecompany;
 
-import com.somecompany.model.Facing;
-import com.somecompany.model.Grid;
-import com.somecompany.model.Location;
-import com.somecompany.model.Robot;
+import com.somecompany.model.*;
 import com.somecompany.service.ToyRobotService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +22,9 @@ public class ToyRobotRightTest {
     private Robot robot;
 
     @Autowired
+    private Obstacle obstacle;
+
+    @Autowired
     private Grid grid;
 
     @Autowired
@@ -42,6 +42,8 @@ public class ToyRobotRightTest {
         grid.setHeight(5);
 
         robot.setLocation(null);
+
+        obstacle.setLocation(null);
     }
 
     @Test

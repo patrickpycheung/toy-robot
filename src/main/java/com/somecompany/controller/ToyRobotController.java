@@ -55,6 +55,22 @@ public class ToyRobotController {
     }
 
     /**
+     * API endpoint for "PLACE_OBSTACLE" function.
+     *
+     * @return ResponseEntity<String>
+     */
+    @PutMapping("/placeObstacle")
+    public ResponseEntity<Mono<String>> placeObstacle() {
+
+        try {
+            toyRobotService.placeObstacle();
+            return ResponseEntity.status(HttpStatus.OK).body(Mono.just("Successfully placed obstacle on grid."));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
+        }
+    }
+
+    /**
      * API endpoint for "MOVE" function.
      *
      * @return ResponseEntity<Mono < String>>
