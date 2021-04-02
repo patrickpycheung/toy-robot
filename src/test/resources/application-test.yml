@@ -1,0 +1,31 @@
+inputFile:
+  Path: "data/TestData.txt"
+  Renamed:
+    folder: "data/processed/"
+    suffix: "_Processed_"
+
+grid:
+  width:
+    minAllowedSize: 1
+    maxAllowedSize: 100
+  height:
+    minAllowedSize: 1
+    maxAllowedSize: 100
+
+errorMsg:
+  invalidApiParams: "Error: Invalid parameters!"
+  ioException: "Error: I/O excpetion has occurred!"
+  invalidGridSizeInput: "Error: Invalid grid size input! Grid size input should have the format 'widthxheight', e.g. '5x5'!"
+  widthOutOfBounce: "Width should have a value between %1$s and %2$s!"
+  heightOutOfBounce: "Height should have a value between %1$s and %2$s!"
+  nullOrEmptyUserInput: "Error: Invalid input! Null or empty input not allowed!"
+  invalidCommand: "Error: Invalid command!"
+  invalidPlaceCommandFormat: "Error: Invalid input! PLACE command should have the format 'PLACE <x-coordinate> <y-coordinate> <facing>'!"
+  invalidNonPlaceCommandFormat: "Error: Invalid input! %1$s command should have the format '%1$s'!"
+  noLocation: "Error: The robot does not have a Location yet! Make sure you have run PLACE command!"
+  xCorNotInteger: "Error: Invalid input! x-coordinate should be an integer!"
+  xCorOutOfBounce: "Error: Invalid input! x-coordinate should have a value between 0 and %s!"
+  yCorNotInteger: "Error: Invalid input! y-coordinate should be an integer!"
+  yCorOutOfBounce: "Error: Invalid input! y-coordinate should have a value between 0 and %s!"
+  invalidFacing: "Error: Invalid input! Facing is invalid"
+  robotFallOff: "Error: The robot will fall of the grid after this move!"
