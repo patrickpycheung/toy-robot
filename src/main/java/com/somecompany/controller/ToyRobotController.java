@@ -89,6 +89,23 @@ public class ToyRobotController {
     }
 
     /**
+     * API endpoint for "RIGHT" function.
+     *
+     * @return ResponseEntity<Mono < String>>
+     */
+    @PostMapping("/right")
+    public ResponseEntity<Mono<String>> right() {
+
+        try {
+            toyRobotService.right();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Mono.just("Successfully turned robot to the left, new location is " + toyRobotService.report()));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Mono.just(exception.getMessage()));
+        }
+    }
+
+    /**
      * Handle handleHttpMessageNotReadableException, e.g. cannot parse the parameters.
      *
      * @return ResponseEntity<String>
