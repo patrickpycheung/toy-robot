@@ -27,7 +27,7 @@ The Toy Robot application is a simulation of a toy robot moving on a square tabl
   | Editor | Version | Date |Description|
   | --- | --- | --- | --- |
   | Patrick | 1.0.0| 21 Feb 2021 |Initial release|
-  | Patrick | 2.0.0| 2 Apr 2021 |Add:<br/>(1) Ability to specify grid size<br/>(2) Read commands from file before manual console input<br/>(3) "PLACE_OBSTACLE" command to place an obstacle in front of the robot|
+  | Patrick | 2.0.0| 2 Apr 2021 |Add:<br/>(1) Ability to specify grid size<br/>(2) Read commands from file before manual console input<br/>(3) Ability to give instructions through API call<br/>(4) "PLACE_OBSTACLE" command to place an obstacle in front of the robot|
 
 ## **Assumptions**
 
